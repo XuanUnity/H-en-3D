@@ -1,19 +1,29 @@
 fileFormatVersion: 2
-guid: fb80eaafee4b48c40826ef7c8d7fddd3
+guid: 030a4c8584dcc5448829e430684c39a9
 ModelImporter:
   serializedVersion: 24501
   internalIDToNameTable: []
   externalObjects:
   - first:
-      type: UnityEngine:Texture2D
+      type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: citybits_texture
-    second: {fileID: 2800000, guid: fb27e1b9c325d5940962c6be3380bce3, type: 3}
+      name: citybits_texture.003
+    second: {fileID: 2100000, guid: 18b7680317d03024ca20ce80948ef4de, type: 2}
   - first:
-      type: UnityEngine:Texture2D
+      type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: platformer_texture
-    second: {fileID: 2800000, guid: 13df52aeaa2cebc49b79115ce0c5ba29, type: 3}
+      name: citybits_texture.004
+    second: {fileID: 2100000, guid: f34b1f16623934647846bb38a9e2c472, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: citybits_texture.040
+    second: {fileID: 2100000, guid: 9aaa2c75086c9b543a37305e0d399ee2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: platformer
+    second: {fileID: 2100000, guid: 6b4192d959852314ba854e8260beeb53, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
