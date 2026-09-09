@@ -1,16 +1,14 @@
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class GameManager : Singleton<GameManager>
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [Header("UI")]
+    [SerializeField] private UIGame uiGame;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+
+
+
+
+
+    public UIGame UIGame => uiGame;
 }

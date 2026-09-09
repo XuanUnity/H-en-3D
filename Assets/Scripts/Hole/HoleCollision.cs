@@ -22,6 +22,8 @@ public class HoleCollision : MonoBehaviour
     [Header("Transparent Settings")]
     [SerializeField] private Material building;
     [SerializeField] private Material buildingCity;
+    [SerializeField] private Material forest;
+    [SerializeField] private Material forestCity;
 
 
     private HoleSize holeSize;
@@ -49,7 +51,7 @@ public class HoleCollision : MonoBehaviour
         float holeDiameter = holeSize.diameter;
         float cityDiameter = cityObj.diameter;
 
-        Debug.Log($"HoleCollision: Hole diameter = {holeDiameter}, CityObject diameter = {cityDiameter}");
+        //Debug.Log($"HoleCollision: Hole diameter = {holeDiameter}, CityObject diameter = {cityDiameter}");
 
         if (holeDiameter >= cityDiameter)
         {

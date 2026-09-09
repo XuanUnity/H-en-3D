@@ -21,6 +21,7 @@ public class CityObject : MonoBehaviour
     public MeshRenderer mesh;
 
     public float diameter;
+    public int score;
 
     void Start()
     {
@@ -37,10 +38,10 @@ public class CityObject : MonoBehaviour
     void Update()
     {
 
-        if (transform.position.y < -10f)
+        if (transform.position.y < -5f)
         {
             gameObject.SetActive(false);
-            HoleController.Instance.HoleSize.IncreaseScoreSize();
+            HoleController.Instance.HoleSize.IncreaseScoreSize(score);
         }    
         
     }
@@ -89,22 +90,12 @@ public class CityObject : MonoBehaviour
     {
         Vector3 s = CalculateSize();
         diameter = Mathf.Max(s.x, s.z);
+        SetScore();
     }
-
-    /// <summary>
-    /// Gọi khi Hole va chạm vào object này. Chỉ tắt "isKinematic" đúng 1 LẦN ĐẦU TIÊN
-    /// (những lần va chạm sau, kể cả với Hole khác, sẽ không làm gì thêm vì đã tắt rồi).
-    /// Sau khi tắt kinematic, object sẽ rơi/phản ứng vật lý bình thường theo trọng lực và va chạm.
-    /// </summary>
-    public void OnHoleHit()
+    public void SetScore()
     {
-        if (hasBeenHitByHole) return;
-        hasBeenHitByHole = true;
-
-        if (rb == null) rb = GetComponent<Rigidbody>();
-        if (rb != null)
-        {
-            rb.isKinematic = false;
-        }
+        float s = diameter * 10;
+        score = int.Parse(s.ToString("F0"));
     }
+
 }

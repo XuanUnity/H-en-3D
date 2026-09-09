@@ -14,4 +14,18 @@ public class HoleController : Singleton<HoleController>
     public HoleUI HoleUI => holeUI;
 
 
+    public int scoreGame;
+
+    private void Awake()
+    {
+        scoreGame = 0;
+        HoleUI.UpdateScoreUI(scoreGame);
+    }
+
+    public void IncreaseScore(int score)
+    {
+        scoreGame += score;
+        HoleUI.UpdateScoreUI(scoreGame);
+        GameManager.Instance.UIGame.ShowGameVFXPanel(score);
+    }
 }
