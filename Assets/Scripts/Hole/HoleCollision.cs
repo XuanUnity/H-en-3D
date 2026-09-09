@@ -1,17 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Gắn trên object Hole (cùng với HoleSize). Khi Hole va chạm (trigger) vào object tag "Building":
-///  1. Lấy Rigidbody của object, tắt kinematic (isKinematic = false) để object bắt đầu chịu vật lý.
-///  2. Lấy CityObject, so sánh đường kính (Diameter) giữa Hole và object:
-///     - Hole LỚN HƠN -> chuyển layer object sang "NoCollider" (xuyên qua, không hồi lại khi exit).
-///     - Hole NHỎ HƠN -> làm trong suốt object bằng thông số "_Fade" của shader Custom/CityDitherLit
-///       (material Building), không đụng tới material dùng chung (dùng MaterialPropertyBlock riêng cho object).
-/// Khi Hole rời khỏi (OnTriggerExit): nếu object đang bị làm trong suốt (do Hole nhỏ hơn) thì trả lại
-/// bình thường (Fade = 0). Trường hợp đã đổi sang layer NoCollider thì giữ nguyên, không hồi lại.
-/// Yêu cầu: Hole có Collider "Is Trigger" = true, và 1 trong 2 bên (Hole/Building) có Rigidbody.
-/// </summary>
 [RequireComponent(typeof(HoleSize))]
 public class HoleCollision : MonoBehaviour
 {
@@ -59,7 +48,11 @@ public class HoleCollision : MonoBehaviour
         }
         else if (holeDiameter < cityDiameter)
         {
-            cityObj.mesh.material = building;
+            if (cityObj.mesh == null) return; // Không có Renderer -> không có material để đổi
+
+            bool isForest = IsForestMaterial(cityObj.mesh.sharedMaterial);
+
+            cityObj.mesh.material = isForest ? forest : building;
         }
     }
 
@@ -72,8 +65,30 @@ public class HoleCollision : MonoBehaviour
         CityObject cityObj = other.GetComponent<CityObject>();
 
         if (cityObj == null) return;
-        cityObj.mesh.material = buildingCity;
+        if (cityObj.mesh == null) return; // Không có Renderer (ví dụ rig không có mesh trực tiếp) -> bỏ qua
 
+        Material currentMat = cityObj.mesh.sharedMaterial;
+
+        if (IsFadeMaterial(currentMat, forest))
+        {
+            cityObj.mesh.material = forestCity;
+        }
+        else if (IsFadeMaterial(currentMat, building))
+        {
+            cityObj.mesh.material = buildingCity;
+        }
+    }
+
+    private bool IsForestMaterial(Material mat)
+    {
+        if (mat == null) return false;
+        return mat.name.Contains("ForestCity");
+    }
+
+    private bool IsFadeMaterial(Material current, Material fadeReference)
+    {
+        if (current == null || fadeReference == null) return false;
+        return current == fadeReference || current.name == fadeReference.name;
     }
 
 }

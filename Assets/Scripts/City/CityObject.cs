@@ -18,7 +18,8 @@ public class CityObject : MonoBehaviour
 
     private Rigidbody rb;
 
-    public MeshRenderer mesh;
+    // Đổi từ MeshRenderer -> Renderer để hỗ trợ cả SkinnedMeshRenderer (nhân vật có rig/animation)
+    public Renderer mesh;
 
     public float diameter;
     public int score;
@@ -32,13 +33,20 @@ public class CityObject : MonoBehaviour
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
-        mesh = GetComponent<MeshRenderer>();
+
+        // Object gốc (ví dụ "..._Rig") thường KHÔNG có Renderer trên chính nó,
+        // mesh thực tế nằm ở object con -> phải tìm cả trong children.
+        mesh = GetComponent<Renderer>();
+        if (mesh == null)
+        {
+            mesh = GetComponentInChildren<Renderer>();
+        }
     }
 
     void Update()
     {
 
-        if (transform.position.y < -5f)
+        if (transform.position.y < -3f)
         {
             gameObject.SetActive(false);
             HoleController.Instance.HoleSize.IncreaseScoreSize(score);
