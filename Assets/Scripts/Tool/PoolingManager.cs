@@ -102,22 +102,31 @@ public class Pool // Lớp cơ sở của Pooling
         // Hàm Spawn, Cho phép truyền vào một vị trí (postion), góc độ ban đầu (quaternion)  và thằng cha của nó ( mặc cha của là null)
         GameObject newObject; // Khai báo GameObject mới
 
-        // Sử dụng while(true) để kiểm tra xem List GameObject có còn phần tử nào không, Nếu còn thì lấy từ List GameObject ra, Còn nếu không còn thì Sinh ra một GameObject mới
-        while (true)
+        // Lấy object cũ từ Stack ra để tái sử dụng, bỏ qua những object đã bị Destroy() từ
+        // bên ngoài (VD: bị hủy chung với parent khi đổi scene/dọn UI thay vì được Despawn()
+        // đúng cách qua PoolingManager). "newObject == null" ở đây dùng toán tử == đã bị Unity
+        // override để trả về true khi native object phía dưới đã bị destroy, dù reference C#
+        // chưa thực sự null -> tránh MissingReferenceException khi truy cập .transform.
+        while (listGameObject.Count > 0)
         {
-            if (listGameObject.Count <= 0)
-            {
-                newObject = Object.Instantiate(prefab, position, quaternion, parent); //Sinh ra Object mới không có trong List Object
-                newObject.name = prefab.name; // Set lại tên của nó
-                IDObjects.Add(newObject.GetEntityId()); // Thêm ID của nó vào danh sách ID
-                return newObject; // Trả về gameObject được sinh ra
-            }
             newObject = listGameObject.Pop(); // Lấy GameObject từ List GameObject 
+
+            if (newObject == null)
+            {
+                continue; // Object đã bị destroy từ bên ngoài -> bỏ qua, thử lấy tiếp phần tử khác
+            }
+
             newObject.transform.SetPositionAndRotation(position, quaternion); // Set lại vị trí và góc độ đồng thời set lại gameobject chứa newObject
-            newObject.transform.parent = parent;
+            newObject.transform.SetParent(parent, false); // Dùng SetParent(parent, false) thay vì gán trực tiếp property "parent" để giữ local orientation/scale, tránh lỗi scale khi parent là RectTransform (UI)
             newObject.SetActive(true); //Tái kích hoạt nó
             return newObject;
         }
+
+        // Stack rỗng hoặc toàn bộ object còn lại trong Stack đều đã bị destroy -> sinh object mới
+        newObject = Object.Instantiate(prefab, position, quaternion, parent); //Sinh ra Object mới không có trong List Object
+        newObject.name = prefab.name; // Set lại tên của nó
+        IDObjects.Add(newObject.GetEntityId()); // Thêm ID của nó vào danh sách ID
+        return newObject; // Trả về gameObject được sinh ra
     }
 
     // Sử generic để tái sử dụng hàm spawn
@@ -128,6 +137,7 @@ public class Pool // Lớp cơ sở của Pooling
 
     public void Despawn(GameObject gameObject)
     {
+        if (gameObject == null) return; // Phòng trường hợp bị gọi Despawn với object đã bị destroy
         gameObject.SetActive(false); // Tắt game obejct
         listGameObject.Push(gameObject); // Đẩy game object vào danh sách object
     }

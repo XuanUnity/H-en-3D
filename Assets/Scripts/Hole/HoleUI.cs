@@ -16,6 +16,7 @@ public class HoleUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI txtUpSize;
 
     private Tween fillTween;
+    public bool isAI = false;
 
     public void UpdateSizeFill(float x)
     {
@@ -37,6 +38,8 @@ public class HoleUI : MonoBehaviour
 
     public void OpenTextUpSize()
     {
+        if(isAI) return;  
+
         txtUpSize.gameObject.SetActive(true);
 
         DOVirtual.DelayedCall(0.5f, () =>

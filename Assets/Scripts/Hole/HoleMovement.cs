@@ -23,6 +23,7 @@ public class HoleMovement : MonoBehaviour
 
     private void Update()
     {
+        if(GameManager.Instance.state != GameManager.GameState.Playing) return;
         Move(Time.deltaTime);
     }
 

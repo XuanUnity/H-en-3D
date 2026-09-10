@@ -3,7 +3,6 @@ using UnityEngine;
 public class CityObject : MonoBehaviour
 {
     [Header("Object Size (tự tính 1 lần, cache lại)")]
-    [Tooltip("Đã tính size/footPosition chưa. false -> chưa tính (sẽ tính khi gọi CalculateSize). true -> đã có giá trị, không tính lại.")]
     public bool hasCalculated = false;
 
     [Tooltip("Kích thước (width=X, height=Y, depth=Z) của object, tính từ bounds của tất cả Renderer con.")]
@@ -15,10 +14,11 @@ public class CityObject : MonoBehaviour
     [Header("Hole Interaction")]
     [Tooltip("Đã bị Hole va chạm lần nào chưa. Dùng để chỉ tắt kinematic đúng 1 lần đầu tiên.")]
     public bool hasBeenHitByHole = false;
+    public HoleController holeController;
 
     private Rigidbody rb;
+    private Collider co;
 
-    // Đổi từ MeshRenderer -> Renderer để hỗ trợ cả SkinnedMeshRenderer (nhân vật có rig/animation)
     public Renderer mesh;
 
     public float diameter;
@@ -34,8 +34,6 @@ public class CityObject : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
 
-        // Object gốc (ví dụ "..._Rig") thường KHÔNG có Renderer trên chính nó,
-        // mesh thực tế nằm ở object con -> phải tìm cả trong children.
         mesh = GetComponent<Renderer>();
         if (mesh == null)
         {
@@ -45,22 +43,27 @@ public class CityObject : MonoBehaviour
 
     void Update()
     {
-
-        if (transform.position.y < -3f)
+        if (transform.position.y < -2f)
         {
             gameObject.SetActive(false);
-            HoleController.Instance.HoleSize.IncreaseScoreSize(score);
+            if(holeController != null)
+                holeController.HoleSize.IncreaseScoreSize(score);
         }    
-        
     }
 
-    /// <summary>
-    /// Tính kích thước của object dựa trên bounds tổng hợp (Encapsulate) của tất cả
-    /// Renderer trong chính object và các object con (kích thước tính ở "chân" object -
-    /// tức lấy điểm đáy bounds làm gốc tham chiếu).
-    /// Nếu "hasCalculated" = true thì hàm sẽ KHÔNG tính lại, trả về giá trị cũ.
-    /// Nếu "hasCalculated" = false thì mới thực sự chạy tính toán.
-    /// </summary>
+    public void SetTrigger(bool isTrigger)
+    {
+        if (co == null)
+        {
+            co = GetComponent<Collider>();
+        }
+
+        if (co != null)
+        {
+            co.isTrigger = isTrigger;
+        }
+    }
+
     public Vector3 CalculateSize()
     {
         // Đã có giá trị -> không tính lại, trả về luôn
